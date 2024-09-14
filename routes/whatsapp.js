@@ -30,8 +30,19 @@ client.on('qr', (qr) => {
 
 
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log('Client is ready!');
+    
+    // Enviar un mensaje de prueba al número 51 6864631530
+    try {
+        const chatId = '516864631530@c.us'; // Número de destino con formato internacional
+        const message = 'Mensaje de prueba enviado automáticamente al iniciar sesión';
+        
+        await client.sendMessage(chatId, message);
+        console.log('Mensaje de prueba enviado al número 51 6864631530');
+    } catch (error) {
+        console.error('Error al enviar el mensaje de prueba:', error);
+    }
 });
 
 client.on('message_create', (message) => {
@@ -75,6 +86,12 @@ router.post('/send', async (req, res) => {
 router.get('/messages', (req, res) => {
     res.json({ messages: receivedMessages });
 });
+// Endpoint para verificar si la sesión está activa
+router.get('/check-session', (req, res) => {
+    const sessionActive = client.info !== undefined; // Verificar si la sesión está activa
+    res.json({ loggedIn: sessionActive });
+});
+
 
 // Endpoint para obtener el código QR en formato base64
 router.get('/qr', (req, res) => {
