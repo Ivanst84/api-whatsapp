@@ -38,7 +38,6 @@ client2.on('qr', (qr) => {
         qrCodeUrl2 = url;
     });
 });
-
 // Iniciar ambos clientes
 client1.initialize();
 client2.initialize();
