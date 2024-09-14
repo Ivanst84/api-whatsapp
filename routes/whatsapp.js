@@ -40,8 +40,12 @@ client2.on('qr', (qr) => {
 });
 
 // Inicializar ambos clientes
-client1.initialize();
-client2.initialize();
+client1.initialize().then(() => {
+    console.log('Client 1 initialized');
+    client2.initialize().then(() => {
+        console.log('Client 2 initialized');
+    });
+});
 
 // Verificar si ambos están listos
 client1.on('ready', () => console.log('Client 1 is ready!'));
