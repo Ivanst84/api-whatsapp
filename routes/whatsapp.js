@@ -1,22 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { Client } = require('whatsapp-web.js');
+const sessions = {}; // Almacena las sesiones activas
 
-let sessions = {}; // Manejar las sesiones activas por IP del cliente
+// Endpoint para comprobar si la sesión está activa
+router.get('/check-session', (req, res) => {
+    const sessionActive = sessions[req.ip] !== undefined;
+    res.json({ loggedIn: sessionActive });
+});
 
-router.post('/send-message', async (req, res) => {
-  const { recipient, message } = req.body;
-  const client = sessions[req.ip]; // Obtener el cliente activo por IP
-
-  if (!client) return res.status(400).json({ error: 'Sesión no iniciada' });
-
-  try {
-    await client.sendMessage(`${recipient}@c.us`, message);
-    res.json({ status: 'Mensaje enviado' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al enviar el mensaje' });
-  }
+// Endpoint para guardar la sesión cuando se inicia
+router.post('/save-session', (req, res) => {
+    const sessionData = req.body.session;
+    sessions[req.ip] = sessionData; // Asigna la sesión a la IP del cliente
+    res.json({ status: 'Sesión guardada' });
 });
 
 module.exports = router;
-
