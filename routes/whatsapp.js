@@ -2,26 +2,36 @@
 const express = require('express');
 const router = express.Router();
 const { Client } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode');
 
 // Inicializar el cliente de WhatsApp
 const client = new Client({
     puppeteer: {
-        headless: true,
+        headless: true, // Ejecuta sin abrir el navegador
     },
 });
 
 let receivedMessages = []; // Arreglo para almacenar los mensajes recibidos
+let qrCodeUrl = ''; // Variable para almacenar el código QR
 
-client.on('qr', qr => {
-    qrcode.generate(qr, { small: true });
+client.on('qr', (qr) => {
+    console.log('QR code generated');
+    qrcode.toDataURL(qr, (err, url) => {
+        if (err) {
+            console.error('Error al generar el código QR:', err);
+            return;
+        }
+        qrCodeUrl = url; // Guardar el QR en formato de URL base64
+    });
 });
+
+
 
 client.on('ready', () => {
     console.log('Client is ready!');
 });
 
-client.on('message_create', message => {
+client.on('message_create', (message) => {
     console.log('Mensaje recibido:', message.body);
 
     // Guardar los mensajes entrantes
@@ -61,6 +71,15 @@ router.post('/send', async (req, res) => {
 // Endpoint para obtener los mensajes recibidos
 router.get('/messages', (req, res) => {
     res.json({ messages: receivedMessages });
+});
+
+// Endpoint para obtener el código QR en formato base64
+router.get('/qr', (req, res) => {
+    if (qrCodeUrl) {
+        res.json({ qrCode: qrCodeUrl });
+    } else {
+        res.status(500).json({ error: 'QR no disponible' });
+    }
 });
 
 module.exports = router;
