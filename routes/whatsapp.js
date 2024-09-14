@@ -8,8 +8,11 @@ const qrcode = require('qrcode');
 const client = new Client({
     puppeteer: {
         headless: true, // Ejecuta sin abrir el navegador
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+
     },
 });
+
 
 let receivedMessages = []; // Arreglo para almacenar los mensajes recibidos
 let qrCodeUrl = ''; // Variable para almacenar el código QR
