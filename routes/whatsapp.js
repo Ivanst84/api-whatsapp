@@ -3,13 +3,13 @@ const router = express.Router();
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 
-// Inicializar dos clientes de WhatsApp
+// Inicializar dos clientes de WhatsApp con diferentes directorios temporales
 const client1 = new Client({
-    puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] }
+    puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'], userDataDir: './puppeteer_client1' }
 });
 
 const client2 = new Client({
-    puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] }
+    puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'], userDataDir: './puppeteer_client2' }
 });
 
 let qrCodeUrl1 = ''; // QR para el primer cliente
@@ -38,7 +38,8 @@ client2.on('qr', (qr) => {
         qrCodeUrl2 = url;
     });
 });
-// Iniciar ambos clientes
+
+// Inicializar ambos clientes
 client1.initialize();
 client2.initialize();
 
@@ -91,3 +92,4 @@ router.post('/start-conversation', async (req, res) => {
 });
 
 module.exports = router;
+
